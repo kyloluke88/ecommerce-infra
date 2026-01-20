@@ -1,0 +1,80 @@
+version: "3.9"
+
+services:
+  nginx:
+    image: nginx:1.25-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/dev.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - shop
+      - admin
+      - api
+    networks:
+      - myshop
+
+  shop:
+    build:
+      context: ../shop
+    volumes:
+      - ../shop:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "3000:3000"
+    networks:
+      - myshop
+
+  admin:
+    build:
+      context: ../admin
+    volumes:
+      - ../admin:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "5173:5173"
+    networks:
+      - myshop
+
+  api:
+    build:
+      context: ../api
+    volumes:
+      - ../api:/app
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - myshop
+
+  postgres:
+    image: postgres:16-alpine
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - myshop
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - myshop
+
+networks:
+  myshop:
+
+volumes:
+  pgdata:
