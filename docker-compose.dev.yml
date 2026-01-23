@@ -61,6 +61,10 @@ services:
       - .env
     volumes:
       - pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=myshop
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=shop
     ports:
       - "5432:5432"
     networks:
