@@ -52,6 +52,10 @@ services:
     depends_on:
       - postgres
       - redis
+      - mailhog
+    environment:
+      - SMTP_HOST=mailhog
+      - SMTP_PORT=1025
     networks:
       - myshop
 
@@ -74,6 +78,13 @@ services:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+    networks:
+      - myshop
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025" # SMTP 服务器端口
+      - "8025:8025" # Web UI 端口
     networks:
       - myshop
 
